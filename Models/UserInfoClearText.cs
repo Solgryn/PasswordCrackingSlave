@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace PWCrackService.Models
 {
@@ -9,6 +6,8 @@ namespace PWCrackService.Models
     {
         public String UserName { get; set; }
         public String Password { get; set; }
+
+        public UserInfoClearText() { }
 
         public UserInfoClearText(string username, string password)
         {

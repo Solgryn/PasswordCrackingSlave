@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Services;
+using Newtonsoft.Json.Schema;
 using PWCrackService.Models;
 
 namespace PWCrackService
@@ -19,9 +20,10 @@ namespace PWCrackService
     {
 
         [WebMethod]
-        public string Crack(List<string> words, List<UserInfo> userInfos)
+        public List<UserInfoClearText> Crack(List<string> words, List<UserInfo> userInfos)
         {
-            return "Hello World";
+            var cracker = new Cracking();
+            return cracker.RunCracking(words, userInfos);
         }
     }
 }

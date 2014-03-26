@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace PWCrackService.Models
 {
@@ -11,6 +8,8 @@ namespace PWCrackService.Models
         public String Username { get; set; }
         public String EntryptedPasswordBase64 { get; set; }
         public byte[] EntryptedPassword { get; set; }
+
+        public UserInfo(){}
 
         public UserInfo() : this("", "")
         {
