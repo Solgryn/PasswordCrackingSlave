@@ -19,8 +19,6 @@ namespace PWCrackService
         public Cracking()
         {
             _messageDigest = new SHA1CryptoServiceProvider();
-            //_messageDigest = new MD5CryptoServiceProvider();
-            // seems to be same speed
         }
 
         /// <summary>
@@ -28,19 +26,12 @@ namespace PWCrackService
         /// </summary>
         public List<UserInfoClearText> RunCracking(List<string> words, List<UserInfo> userInfos)
         {
-            //var stopwatch = Stopwatch.StartNew();
-
-            //var userInfos = PasswordFileHandler.ReadPasswordFile("passwords.txt");
             var result = new List<UserInfoClearText>();
             foreach (var word in words)
             {
                 var partialResult = CheckWordWithVariations(word, userInfos);
                 result.AddRange(partialResult);
             }
-                   
-            //stopwatch.Stop();
-            //Console.WriteLine(string.Join(", ", result));
-            //Console.WriteLine("Time elapsed: {0}", stopwatch.Elapsed);
 
             return result;
         }
@@ -109,7 +100,6 @@ namespace PWCrackService
             char[] charArray = possiblePassword.ToCharArray();
             byte[] passwordAsBytes = Array.ConvertAll(charArray, PasswordFileHandler.GetConverter());
             byte[] encryptedPassword = _messageDigest.ComputeHash(passwordAsBytes);
-            //string encryptedPasswordBase64 = System.Convert.ToBase64String(encryptedPassword);
 
             var results = new List<UserInfoClearText>();
             foreach (var userInfo in userInfos)
@@ -117,7 +107,6 @@ namespace PWCrackService
                 if (CompareBytes(userInfo.EntryptedPassword, encryptedPassword))
                 {
                     results.Add(new UserInfoClearText(userInfo.Username, possiblePassword));
-                    Console.WriteLine(userInfo.Username + " " + possiblePassword);
                 }
             }
             return results;

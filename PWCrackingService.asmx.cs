@@ -20,10 +20,26 @@ namespace PWCrackService
     {
 
         [WebMethod]
-        public List<UserInfoClearText> Crack(List<string> words, List<UserInfo> userInfos)
+        public string[] Crack(string[] words, string[] userInfos)
         {
+            var wordsList = words.ToList();
+            var userInfoList = new List<UserInfo>();
+            foreach (var line in userInfos)
+            {
+                var parts = line.Split(':');
+                var userInfo = new UserInfo(parts[0], parts[1]);
+                userInfoList.Add(userInfo);
+            }
+            
             var cracker = new Cracking();
-            return cracker.RunCracking(words, userInfos);
+            var result = cracker.RunCracking(wordsList, userInfoList);
+
+            var resultArray = new string[result.Count];
+            for (var i = 0; i < result.Count; i++)
+            {
+                resultArray[i] = result[i].UserName + ": " + result[i].Password;
+            }
+            return resultArray;
         }
     }
 }
