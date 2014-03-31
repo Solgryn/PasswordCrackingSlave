@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PWCrackService.Models
+namespace PWCrackService
 {
     public class UserInfoClearText
     {

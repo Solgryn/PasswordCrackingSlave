@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Services;
-using Newtonsoft.Json.Schema;
-using PWCrackService.Models;
 
 namespace PWCrackService
 {
@@ -30,7 +28,7 @@ namespace PWCrackService
                 var userInfo = new UserInfo(parts[0], parts[1]);
                 userInfoList.Add(userInfo);
             }
-            
+
             var cracker = new Cracking();
             var result = cracker.RunCracking(wordsList, userInfoList);
 

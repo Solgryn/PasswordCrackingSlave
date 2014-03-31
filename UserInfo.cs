@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PWCrackService.Models
+namespace PWCrackService
 {
     [Serializable]
     public class UserInfo
