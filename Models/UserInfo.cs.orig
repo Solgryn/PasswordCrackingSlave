@@ -9,7 +9,13 @@ namespace PWCrackService.Models
         public String EntryptedPasswordBase64 { get; set; }
         public byte[] EntryptedPassword { get; set; }
 
+<<<<<<< HEAD
+        public UserInfo() : this("", "")
+        {
+        }
+=======
         public UserInfo(){}
+>>>>>>> Major edits
 
         public UserInfo(String username, String entryptedPasswordBase64)
         {

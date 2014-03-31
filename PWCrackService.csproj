@@ -108,6 +108,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cracking.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -118,6 +119,8 @@
       <DependentUpon>PWCrackingService.asmx</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="util\PasswordFileHandler.cs" />
+    <Compile Include="util\StringUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\FilterConfig.cs" />
