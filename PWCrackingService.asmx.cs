@@ -18,8 +18,15 @@ namespace PWCrackService
     {
 
         [WebMethod]
-        public string[] Crack(string[] words, string[] userInfos)
+        public List<UserInfoClearText> Crack(string[] words, UserInfo[] userInfos)
         {
+            List<UserInfoClearText> list = new List<UserInfoClearText>();
+            UserInfoClearText info = new UserInfoClearText();
+            info.UserName = "user";
+            info.Password = "pass";
+            list.Add(info);
+            return list;
+            /*
             var wordsList = words.ToList();
             var userInfoList = new List<UserInfo>();
             foreach (var line in userInfos)
@@ -38,6 +45,7 @@ namespace PWCrackService
                 resultArray[i] = result[i].UserName + ": " + result[i].Password;
             }
             return resultArray;
+            */
         }
     }
 }
