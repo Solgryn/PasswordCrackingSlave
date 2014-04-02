@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using PWCrackService.util;
 
 namespace PWCrackService
@@ -24,12 +25,22 @@ namespace PWCrackService
         public List<UserInfoClearText> RunCracking(List<string> words, List<UserInfo> userInfos)
         {
             var result = new List<UserInfoClearText>();
-            foreach (var word in words)
+            var list = new List<List<string>>();
+            var size = words.Count/Environment.ProcessorCount;
+
+            for (var i = 0; i < words.Count; i += size)
             {
-                var partialResult = CheckWordWithVariations(word, userInfos);
-                result.AddRange(partialResult);
+                list.Add(words.GetRange(i, Math.Min(size, words.Count - i)));
             }
 
+            Parallel.ForEach(list, currentList =>
+            {
+                foreach (var word in currentList)
+                {
+                    var partialResult = CheckWordWithVariations(word, userInfos);
+                    result.AddRange(partialResult);
+                }
+            });
             return result;
         }
 
