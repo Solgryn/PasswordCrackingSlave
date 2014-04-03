@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 using PWCrackService.util;
 
 namespace PWCrackService
@@ -26,22 +24,12 @@ namespace PWCrackService
         public List<UserInfoClearText> RunCracking(List<string> words, List<UserInfo> userInfos)
         {
             var result = new List<UserInfoClearText>();
-            var list = new List<List<string>>();
-            var size = words.Count/Environment.ProcessorCount;
-
-            for (var i = 0; i < words.Count; i += size)
+            foreach (var word in words)
             {
-                list.Add(words.GetRange(i, Math.Min(size, words.Count - i)));
+                var partialResult = CheckWordWithVariations(word, userInfos);
+                result.AddRange(partialResult);
             }
 
-            Parallel.ForEach(list, currentList =>
-            {
-                foreach (var word in currentList)
-                {
-                    var partialResult = CheckWordWithVariations(word, userInfos);
-                    result.AddRange(partialResult);
-                }
-            });
             return result;
         }
 
@@ -113,12 +101,41 @@ namespace PWCrackService
             var results = new List<UserInfoClearText>();
             foreach (var userInfo in userInfos)
             {
-                if (userInfo.EntryptedPassword.SequenceEqual(encryptedPassword))
+                if (CompareBytes(userInfo.EntryptedPassword, encryptedPassword))
                 {
                     results.Add(new UserInfoClearText(userInfo.Username, possiblePassword));
                 }
             }
             return results;
         }
+
+        /// <summary>
+        /// Compares to byte arrays. Encrypted words are byte arrays
+        /// </summary>
+        /// <param name="firstArray"></param>
+        /// <param name="secondArray"></param>
+        /// <returns></returns>
+        private static bool CompareBytes(IList<byte> firstArray, IList<byte> secondArray)
+        {
+            //if (secondArray == null)
+            //{
+            //    throw new ArgumentNullException("firstArray");
+            //}
+            //if (secondArray == null)
+            //{
+            //    throw new ArgumentNullException("secondArray");
+            //}
+            if (firstArray.Count != secondArray.Count)
+            {
+                return false;
+            }
+            for (var i = 0; i < firstArray.Count; i++)
+            {
+                if (firstArray[i] != secondArray[i])
+                    return false;
+            }
+            return true;
+        }
+
     }
 }
