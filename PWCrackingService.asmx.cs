@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
+using System.Web.Hosting;
 using System.Web.Services;
+using log4net;
+using log4net.Config;
 
 namespace PWCrackService
 {
@@ -17,10 +18,19 @@ namespace PWCrackService
     // [System.Web.Script.Services.ScriptService]
     public class PWCrackingService : System.Web.Services.WebService
     {
+        private readonly ILog log;
+
+        public PWCrackingService()
+        {
+            XmlConfigurator.Configure(new FileInfo(HostingEnvironment.ApplicationPhysicalPath + @"logconfig.xml"));
+            log = LogManager.GetLogger(typeof(PWCrackingService));
+            log.Debug("Service started.");
+        }
 
         [WebMethod]
         public string[] Crack(string[] words)
         {
+            log.Debug("Crack");
             var wordsList = words.ToList();
             var userInfos = (List<UserInfo>)Application["UserInfos"];
 
@@ -38,6 +48,7 @@ namespace PWCrackService
         [WebMethod]
         public void GiveUserInfo(string[] userInfos)
         {
+            log.Debug("GiveUserInfo");
             var userInfoList = new List<UserInfo>();
             foreach (var line in userInfos)
             {
