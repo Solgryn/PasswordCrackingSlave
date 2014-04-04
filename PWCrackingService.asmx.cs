@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web.Hosting;
 using System.Web.Services;
 using log4net;
@@ -29,31 +30,31 @@ namespace PWCrackService
             log.Debug("Service started.");
         }
 
-        [WebMethod]
+        [WebMethod (Description = "Crack the saved password file with an array of words to try.")]
         public string[] Crack(string[] words)
         {
             log.Debug("Crack");
             var wordsList = words.ToList();
             var userInfos = (List<UserInfo>)Application["UserInfos"];
 
-            List<UserInfoClearText> result = new List<UserInfoClearText>();
+            var result = new List<UserInfoClearText>();
 
-            int threadsCount = Environment.ProcessorCount;
-            int chunkSize = wordsList.Count / threadsCount;
-            int lastChunkSize = wordsList.Count % threadsCount;
+            var threadsCount = Environment.ProcessorCount;
+            var chunkSize = wordsList.Count / threadsCount;
+            var lastChunkSize = wordsList.Count % threadsCount;
             if (lastChunkSize != 0)
                 threadsCount++;
 
-            List<Thread> threads = new List<Thread>();
-            for (int i = 0; i < threadsCount; ++i)
+            var threads = new List<Thread>();
+            for (var i = 0; i < threadsCount; ++i) //Give a chunk to each processor
             {
-                int start = i * chunkSize;
-                int count = chunkSize;
+                var start = i * chunkSize;
+                var count = chunkSize;
                 if (i + 1 == threadsCount && lastChunkSize != 0)
                     count = lastChunkSize;
-                Thread thread = new Thread(() =>
+                var thread = new Thread(() =>
                 {
-                    List<string> currentWords = wordsList.GetRange(start, count);
+                    var currentWords = wordsList.GetRange(start, count);
                     var cracker = new Cracking();
                     var partialResult = cracker.RunCracking(currentWords, userInfos);
                     lock (result)
@@ -64,12 +65,12 @@ namespace PWCrackService
                 threads.Add(thread);
                 thread.Start();
             }
-            foreach (Thread thread in threads)
+            foreach (var thread in threads) //Wait for all tasks to complete
             {
                 thread.Join();
             }
 
-            var resultArray = new string[result.Count];
+            var resultArray = new string[result.Count]; //Convert result to an array
             for (var i = 0; i < result.Count; i++)
             {
                 resultArray[i] = result[i].UserName + ": " + result[i].Password;
@@ -77,7 +78,7 @@ namespace PWCrackService
             return resultArray;
         }
 
-        [WebMethod]
+        [WebMethod (Description = "Save a list of userInfos in the web service.")]
         public void GiveUserInfo(string[] userInfos)
         {
             log.Debug("GiveUserInfo");
