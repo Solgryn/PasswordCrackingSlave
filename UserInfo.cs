@@ -28,7 +28,7 @@ namespace PWCrackService
 
         public override string ToString()
         {
-            return Username + ":" + EntryptedPasswordBase64;
+            return Username + ": " + EntryptedPasswordBase64;
         }
     }
 }
