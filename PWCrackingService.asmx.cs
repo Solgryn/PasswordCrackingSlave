@@ -39,14 +39,16 @@ namespace PWCrackService
 
             var result = new List<UserInfoClearText>();
 
+            //Calculate chunk sizes
             var threadsCount = Environment.ProcessorCount;
             var chunkSize = wordsList.Count / threadsCount;
             var lastChunkSize = wordsList.Count % threadsCount;
             if (lastChunkSize != 0)
                 threadsCount++;
 
+            //Decrypt using multiple threads
             var threads = new List<Thread>();
-            for (var i = 0; i < threadsCount; ++i) //Give a chunk to each processor
+            for (var i = 0; i < threadsCount; ++i)
             {
                 var start = i * chunkSize;
                 var count = chunkSize;
@@ -54,6 +56,7 @@ namespace PWCrackService
                     count = lastChunkSize;
                 var thread = new Thread(() =>
                 {
+                    //Process chunk
                     var currentWords = wordsList.GetRange(start, count);
                     var cracker = new Cracking();
                     var partialResult = cracker.RunCracking(currentWords, userInfos);
@@ -65,15 +68,17 @@ namespace PWCrackService
                 threads.Add(thread);
                 thread.Start();
             }
-            foreach (var thread in threads) //Wait for all tasks to complete
+            //Wait for all tasks to complete
+            foreach (var thread in threads)
             {
                 thread.Join();
             }
 
-            var resultArray = new string[result.Count]; //Convert result to an array
+            //Convert to strings
+            var resultArray = new string[result.Count];
             for (var i = 0; i < result.Count; i++)
             {
-                resultArray[i] = result[i].UserName + ": " + result[i].Password;
+                resultArray[i] = result[i].ToString();
             }
             return resultArray;
         }
