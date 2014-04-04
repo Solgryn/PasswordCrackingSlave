@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Web.Hosting;
 using System.Web.Services;
 using log4net;
@@ -34,8 +36,38 @@ namespace PWCrackService
             var wordsList = words.ToList();
             var userInfos = (List<UserInfo>)Application["UserInfos"];
 
-            var cracker = new Cracking();
-            var result = cracker.RunCracking(wordsList, userInfos);
+            List<UserInfoClearText> result = new List<UserInfoClearText>();
+
+            int threadsCount = Environment.ProcessorCount;
+            int chunkSize = wordsList.Count / threadsCount;
+            int lastChunkSize = wordsList.Count % threadsCount;
+            if (lastChunkSize != 0)
+                threadsCount++;
+
+            List<Thread> threads = new List<Thread>();
+            for (int i = 0; i < threadsCount; ++i)
+            {
+                int start = i * chunkSize;
+                int count = chunkSize;
+                if (i + 1 == threadsCount && lastChunkSize != 0)
+                    count = lastChunkSize;
+                Thread thread = new Thread(() =>
+                {
+                    List<string> currentWords = wordsList.GetRange(start, count);
+                    var cracker = new Cracking();
+                    var partialResult = cracker.RunCracking(currentWords, userInfos);
+                    lock (result)
+                    {
+                        result.AddRange(partialResult);
+                    }
+                });
+                threads.Add(thread);
+                thread.Start();
+            }
+            foreach (Thread thread in threads)
+            {
+                thread.Join();
+            }
 
             var resultArray = new string[result.Count];
             for (var i = 0; i < result.Count; i++)
